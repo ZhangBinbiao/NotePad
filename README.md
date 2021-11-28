@@ -2,14 +2,29 @@
 # 添加笔记时间戳
 在布局文件中增加一个TextView来显示时间戳
 
-    <TextView
-        android:id="@+id/text2"
+    <RelativeLayout android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="5dip"
-        android:singleLine="true"
-        android:gravity="center_vertical"
-        />
+        xmlns:android="http://schemas.android.com/apk/res/android">
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@android:id/text1"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:gravity="center_vertical"
+            android:paddingLeft="5dip"
+            android:singleLine="true"
+            />
+
+        <TextView
+            android:id="@+id/text2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dip"
+            android:singleLine="true"
+            android:gravity="center_vertical"
+            />
+
+    </RelativeLayout>
 
 在NodeEditor.java中,找到updateNode()这个函数，选取修改时间这一字段，并将其格式化存入数据库
 
@@ -20,7 +35,20 @@
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
         String dateFormat = simpleDateFormat.format(date);
         values.put(NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE, dateFormat);
-        
+
+在NotePadProvider中添加数据表的创建时间和修改时间的列
+
+    @Override
+        public void onCreate(SQLiteDatabase db) {
+            db.execSQL("CREATE TABLE " + NotePad.Notes.TABLE_NAME + " ("
+                    + NotePad.Notes._ID + " INTEGER PRIMARY KEY,"
+                    + NotePad.Notes.COLUMN_NAME_TITLE + " TEXT,"
+                    + NotePad.Notes.COLUMN_NAME_NOTE + " TEXT,"
+                    + NotePad.Notes.COLUMN_NAME_CREATE_DATE + " INTEGER,"// 列名称创建日期
+                    + NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE + " INTEGER," //列名称修改日期
+                    + ");");
+        }
+
 在NoteList.java的PROJECTION数组中增加该字段的描述
 
      private static final String[] PROJECTION = new String[] {
@@ -140,3 +168,7 @@ NoteSearch.java
             return true;
         }
     }
+
+实验图片：
+![图片](https://user-images.githubusercontent.com/90604287/143771849-f9333305-7c9f-4a0f-9c4d-97a49947efd0.png)
+![图片](https://user-images.githubusercontent.com/90604287/143772115-c6f43e66-2b61-4648-b9a5-544fbc52f1e0.png)
